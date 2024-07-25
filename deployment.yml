@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-deployment
+spec:
+  selector:
+    matchLabels:
+      app: python-deployment
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: python-deployment
+    spec:
+      containers:
+        - name: python-backend
+          image: tushargayakwad/python-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MYSQL_PASSWORD
+              value: admin
+            - name: MYSQL_DB
+              value: mydb
+            - name: MYSQL_HOST
+              value: mysql
+            - name: MYSQL_USER
+              value: admin
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-service
+spec:
+  selector:
+    app: python-deployment
+  ports:
+    - protocol: TCP
+      port: 2002
+      targetPort: 5000
+  type: LoadBalancer
